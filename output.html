@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Invoice Generation System</title>
+    <style>
+        body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 20px;
+    background-color: #f4f4f9;
+}
+
+.container {
+    max-width: 800px;
+    margin: 0 auto;
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+h1, h2 {
+    text-align: center;
+}
+
+label {
+    display: block;
+    margin: 10px 0 5px;
+}
+
+input, textarea {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+#items .item {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 10px;
+}
+
+button {
+    padding: 10px 15px;
+    background: #007bff;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+button:hover {
+    background: #0056b3;
+}
+
+#invoiceOutput {
+    margin-top: 20px;
+}
+
+#invoicePreview {
+    border: 1px solid #ddd;
+    padding: 20px;
+    background: #f9f9f9;
+}
+i{
+    font-size:larger;
+}
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Invoice Generation System</h1>
+        <form id="invoiceForm">
+            <h2>Customer Details</h2>
+            <label for="customerName">Customer Name:</label>
+            <input type="text" id="customerName" required>
+            <label for="customerAddress">Address:</label>
+            <textarea id="customerAddress" rows="2" required></textarea>
+
+            <h2>Item Details</h2>
+            <div id="items">
+                <div class="item">
+                    <input type="text" class="itemDescription" placeholder="Item Description" required>
+                    <input type="number" class="quantity" placeholder="Quantity" min="1" required>
+                    <input type="number" class="price" placeholder="Price per Unit" min="0" required>
+                    <input type="number" class="tax" placeholder="Tax Rate (%)" min="0" required>
+                </div>
+            </div>
+            <button type="button" id="addItem">Add Another Item</button>
+
+            <button type="submit">Generate Invoice</button>
+        </form>
+
+        <div id="invoiceOutput" style="display: none;">
+            <h2>Invoice</h2>
+            <div id="invoicePreview"></div>
+            <button id="editInvoice">Edit</button>
+            <button id="downloadInvoice">Download PDF</button>
+            <button id="printInvoice">Print</button>
+            <br><br><br>
+            <center>
+            <strong><i>Thanks For Shopping !</i></strong>
+            </center>
+        </div>
+    </div>
+    <script>
+        document.getElementById("addItem").addEventListener("click", () => {
+    const items = document.getElementById("items");
+    const newItem = document.createElement("div");
+    newItem.classList.add("item");
+    newItem.innerHTML = `
+        <input type="text" class="itemDescription" placeholder="Item Description" required>
+        <input type="number" class="quantity" placeholder="Quantity" min="1" required>
+        <input type="number" class="price" placeholder="Price per Unit" min="0" required>
+        <input type="number" class="tax" placeholder="Tax Rate (%)" min="0" required>
+    `;
+    items.appendChild(newItem);
+});
+
+document.getElementById("invoiceForm").addEventListener("submit", (event) => {
+    event.preventDefault();
+
+    const customerName = document.getElementById("customerName").value;
+    const customerAddress = document.getElementById("customerAddress").value;
+
+    const items = Array.from(document.getElementsByClassName("item")).map(item => ({
+        description: item.querySelector(".itemDescription").value,
+        quantity: parseInt(item.querySelector(".quantity").value),
+        price: parseFloat(item.querySelector(".price").value),
+        tax: parseFloat(item.querySelector(".tax").value),
+    }));
+
+    let totalAmount = 0;
+
+    const invoiceHTML = `
+        <p><strong>Name:</strong> ${customerName}</p>
+        <p><strong>Address:</strong> ${customerAddress}</p>
+        <table border="1" width="100%" style="margin-top: 20px; text-align: left;">
+            <thead>
+                <tr>
+                    <th>Item</th>
+                    <th>Quantity</th>
+                    <th>Price</th>
+                    <th>Tax</th>
+                    <th>Total</th>
+                </tr>
+            </thead>
+            <tbody>
+                ${items.map(item => {
+                    const itemTotal = item.quantity * item.price;
+                    const taxAmount = (item.tax / 100) * itemTotal;
+                    const total = itemTotal + taxAmount;
+                    totalAmount += total;
+                    return `
+                        <tr>
+                            <td>${item.description}</td>
+                            <td>${item.quantity}</td>
+                            <td>Rs.${item.price.toFixed(2)}</td>
+                            <td>${item.tax}%</td>
+                            <td>Rs.${total.toFixed(2)}</td>
+                        </tr>
+                    `;
+                }).join("")}
+            </tbody>
+        </table>
+        <h3>Total Amount Due: Rs.${totalAmount.toFixed(2)}</h3>
+    `;
+
+    document.getElementById("invoicePreview").innerHTML = invoiceHTML;
+    document.getElementById("invoiceOutput").style.display = "block";
+});
+
+document.getElementById("editInvoice").addEventListener("click", () => {
+    document.getElementById("invoiceOutput").style.display = "none";
+});
+
+document.getElementById("printInvoice").addEventListener("click", () => {
+    window.print();
+});
+
+document.getElementById("downloadInvoice").addEventListener("click", () => {
+    const element = document.createElement("a");
+    const blob = new Blob([document.getElementById("invoicePreview").innerHTML], { type: "text/html" });
+    element.href = URL.createObjectURL(blob);
+    element.download = "invoice.html";
+    element.click();
+});
+    </script>
+</body>
+</html>

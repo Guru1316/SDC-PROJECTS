@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Invoice Generation System</title>
+    <link rel="stylesheet" href="style1.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Invoice Generation System</h1>
+        <form id="invoiceForm">
+            <h2>Customer Details</h2>
+            <label for="customerName">Customer Name:</label>
+            <input type="text" id="customerName" required>
+            <label for="customerAddress">Address:</label>
+            <textarea id="customerAddress" rows="2" required></textarea>
+
+            <h2>Item Details</h2>
+            <div id="items">
+                <div class="item">
+                    <input type="text" class="itemDescription" placeholder="Item Description" required>
+                    <input type="number" class="quantity" placeholder="Quantity" min="1" required>
+                    <input type="number" class="price" placeholder="Price per Unit" min="0" required>
+                    <input type="number" class="tax" placeholder="Tax Rate (%)" min="0" required>
+                </div>
+            </div>
+            <button type="button" id="addItem">Add Another Item</button>
+
+            <button type="submit">Generate Invoice</button>
+        </form>
+
+        <div id="invoiceOutput" style="display: none;">
+            <h2>Invoice</h2>
+            <div id="invoicePreview"></div>
+            <button id="editInvoice">Edit</button>
+            <button id="downloadInvoice">Download PDF</button>
+            <button id="printInvoice">Print</button>
+            <br><br><br>
+            <center>
+            <strong><i>Thanks For Shopping !</i></strong>
+            </center>
+        </div>
+    </div>
+    <script src="script1.js"></script>
+</body>
+</html>
